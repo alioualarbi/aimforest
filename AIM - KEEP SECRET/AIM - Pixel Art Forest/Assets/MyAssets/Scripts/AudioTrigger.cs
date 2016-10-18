@@ -15,11 +15,27 @@ public class AudioTrigger : MonoBehaviour {
 		}
 	}
 
-	void OnTriggerStay2D (Collider2D a_object) {
+	Transform toSet = null;
+	void OnTriggerExit2D (Collider2D a_object){
 		if (enemyAudio == null)
 			return;
 		if (a_object.CompareTag ("Player")) {
-			enemyAudio.setToValue = distanceCurve.Evaluate (1 - Mathf.InverseLerp (0, circleCollider.radius * transform.lossyScale.magnitude, Vector2.Distance (V3To2 (transform.position) + circleCollider.offset, V3To2 (a_object.transform.position))));
+			toSet = null;
+		}
+	}
+
+	void OnTriggerEnter2D (Collider2D a_object){
+		if (enemyAudio == null)
+			return;
+		if (a_object.CompareTag ("Player")) {
+			toSet = a_object.transform;
+		}
+	}
+
+	void Update () {
+		if (toSet != null) {
+			float v = distanceCurve.Evaluate (1 - Mathf.InverseLerp (0, circleCollider.radius * transform.lossyScale.x, Vector2.Distance (V3To2 (transform.position) + circleCollider.offset, V3To2 (toSet.position))));
+			enemyAudio.setToValue = v;
 		}
 	}
 
